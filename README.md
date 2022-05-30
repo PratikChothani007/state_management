@@ -1,7 +1,7 @@
 
 #  State Management
 
-|Topic|brance|
+|Topic|branch|
 |--|--|
 | Future & Future builder | future_builder |
 | Stream & Stream builder | stream_builder  |
