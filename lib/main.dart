@@ -25,29 +25,32 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  Future<String> longTask() async {
-    await Future.delayed(const Duration(seconds: 3));
-    return "Task has been done";
+  Stream<int> autoCounter() async* {
+    int count = 0;
+    while(true){
+      await Future.delayed(const Duration(seconds: 1));
+      yield count++;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Future builder"),
+        title: const Text("Stream builder"),
       ),
       body: Center(
-        child: FutureBuilder<String>(
-          future: longTask(),
+        child: StreamBuilder<int>(
+          // initialData: 0,
+          stream: autoCounter(),
           builder: (_, snapshot) {
-            if (snapshot.data != null) {
-              return Text(snapshot.data!);
-            } else {
-              if (snapshot.hasError) {
-                return const Text("Some thing went wrong");
-              }
-              return const CircularProgressIndicator();
+            if (snapshot.hasError) {
+              return const Text("Some thing went wrong");
             }
+            if (snapshot.data != null) {
+              return Text(snapshot.data.toString());
+            }
+            return const Text("Starting...");
           },
         ),
       ),
