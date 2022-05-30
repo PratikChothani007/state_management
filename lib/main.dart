@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:state_management/bloc.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,24 +26,18 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  Stream<int> autoCounter() async* {
-    int count = 0;
-    while(true){
-      await Future.delayed(const Duration(seconds: 1));
-      yield count++;
-    }
-  }
+  MyBloc bloc = MyBloc();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Stream builder"),
+        title: const Text("BLoC"),
       ),
       body: Center(
         child: StreamBuilder<int>(
           // initialData: 0,
-          stream: autoCounter(),
+          stream: bloc.stream,
           builder: (_, snapshot) {
             if (snapshot.hasError) {
               return const Text("Some thing went wrong");
@@ -50,9 +45,15 @@ class _HomeScreenState extends State<HomeScreen> {
             if (snapshot.data != null) {
               return Text(snapshot.data.toString());
             }
-            return const Text("Starting...");
+            return const Text("Tap to increase");
           },
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          bloc.increment();
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
