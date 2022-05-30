@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:state_management/data_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,9 +11,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: "State Management",
-      home: HomeScreen(),
+      home: ChangeNotifierProvider.value(
+        value: DataProvider(),
+        child: HomeScreen(),
+      ),
     );
   }
 }
@@ -25,34 +30,34 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
 
-  Stream<int> autoCounter() async* {
-    int count = 0;
-    while(true){
-      await Future.delayed(const Duration(seconds: 1));
-      yield count++;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Stream builder"),
+        title: const Text("Provider demo"),
       ),
       body: Center(
-        child: StreamBuilder<int>(
-          // initialData: 0,
-          stream: autoCounter(),
-          builder: (_, snapshot) {
-            if (snapshot.hasError) {
-              return const Text("Some thing went wrong");
-            }
-            if (snapshot.data != null) {
-              return Text(snapshot.data.toString());
-            }
-            return const Text("Starting...");
+        child: Consumer<DataProvider>(
+          builder: (_, provider, child) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(provider.counter.toString()),
+                if(child!= null)child
+              ],
+            );
           },
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text("Only count number will re-render,This text will render only once.",textAlign: TextAlign.center,),
+          ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Provider.of<DataProvider>(context,listen: false).increaseCount();
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }
